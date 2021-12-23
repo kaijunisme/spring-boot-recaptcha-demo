@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>Insert title here</title>
+	<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+	<form id="mainForm" method="POST" action="/captcha" enctype="multipart/form-data" autocomplete="off">
+    	<section class="form-input-block">
+            <div class="input-label">帳號/Email</div>
+            <div class="input-area">
+            	<input type="text" name="email" placeholder="請輸入帳號"/>
+            </div>
+        </section>
+        <section class="form-input-block">
+        	<div class="input-label">密碼</div>
+            <div class="input-area">
+            	<input type="password" name="password" placeholder="請輸入密碼"/>
+            </div>
+        </section>
+        <!-- 除了data-sitekey 為必填，其他都是選填 -->
+        <section class="g-recaptcha" 
+        		 th:data-sitekey="${@environment.getProperty('google.recaptcha.key.site')}"
+        		 data-callback="callBack"
+			     data-expired-callback="expired"
+			     data-error-callback="error"></section>
+        <button type="submit">送出</button>
+    </form>
+    <script>
+    	// 驗證完成後要觸發的function
+    	function callBack(token) {
+    		console.log("驗證完成");
+    	}
+
+    	// 當驗證過期會觸發的function，當勾選我不是機器人後，callback 產生的token 存活時間是一分鐘，時間一到token 便會失效並觸發該方法
+    	function expired() {
+    		console.log("驗證過期");
+    	}
+
+    	// 當驗證失敗時要觸發的function
+    	function error() {
+    		console.log("驗證失敗");    	
+    	}
+    </script>
+</body>
+</html>  
