@@ -3,8 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
-	<!-- 引入JS 時先帶入參數，onload 指定api.js 載入完後執行哪個function，render 固定填explicit，hl 設定語系，非必填，reCAPTCHA 會自動偵測 -->
-	<script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async defer></script>
+	<script src="https://www.google.com/recaptcha/api.js"></script>
 </head>
 <body>
 	<form id="mainForm" method="POST" action="/captcha" enctype="multipart/form-data" autocomplete="off">
@@ -20,32 +19,15 @@
             	<input type="password" name="password" placeholder="請輸入密碼"/>
             </div>
         </section>
-        <section id="captcha" th:data-sitekey="${@environment.getProperty('google.recaptcha.key.site')}"></section>
-        <button type="submit">送出</button>
+        <button class="g-recaptcha"
+			    th:data-sitekey="${@environment.getProperty('google.recaptcha.key.site')}"
+			    data-action="captcha"
+			    data-callback="callBack">送出</button>
     </form>
     <script>
-		// 載入api.js 完成後，要執行的便是在指定塞入reCAPTCHA 的區塊
-		function onloadCallback() {
-			grecaptcha.render("captcha", {
-				"callback" : callBack,
-				"expired-callback" : expired,
-				"error-callback" : error
-			});
-		}
-
     	// 驗證完成後要觸發的function
     	function callBack(token) {
-    		console.log("驗證完成");
-    	}
-    	
-    	// 當驗證過期會觸發的function，當勾選我不是機器人後，callback 產生的token 存活時間是一分鐘，時間一到token 便會失效並觸發該方法
-    	function expired() {
-    		console.log("驗證過期");
-    	}
-    	
-    	// 當驗證失敗時要觸發的function
-    	function error() {
-    		console.log("驗證失敗");    	
+    		document.getElementById("mainForm").submit();    		
     	}
     </script>
 </body>
