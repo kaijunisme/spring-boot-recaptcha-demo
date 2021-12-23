@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Insert title here</title>
-	<script src="https://www.google.com/recaptcha/api.js"></script>
+	<script th:src="${'https://www.google.com/recaptcha/api.js?render='+@environment.getProperty('google.recaptcha.key.site')}"></script>
 </head>
 <body>
 	<form id="mainForm" method="POST" action="/captcha" enctype="multipart/form-data" autocomplete="off">
@@ -19,16 +19,20 @@
             	<input type="password" name="password" placeholder="請輸入密碼"/>
             </div>
         </section>
-        <button class="g-recaptcha"
-			    th:data-sitekey="${@environment.getProperty('google.recaptcha.key.site')}"
-			    data-action="captcha"
-			    data-callback="callBack">送出</button>
+       	<input type="hidden" id="siteKey" th:value="${@environment.getProperty('google.recaptcha.key.site')}"/>
+       	<input type="hidden" id="token" name="g-recaptcha-response"/>
+        <button type="button" id="btnSubmit">送出</button>
     </form>
     <script>
-    	// 驗證完成後要觸發的function
-    	function callBack(token) {
-    		document.getElementById("mainForm").submit();    		
-    	}
+    	document.getElementById("btnSubmit").addEventListener("click", function() {
+    		grecaptcha.ready(function() {
+		    	grecaptcha.execute(document.getElementById("siteKey").value, {action : "captcha"}).then(function(token) {
+					// 將token 送到後端做驗證
+					document.getElementById("token").value=token;
+					document.getElementById("mainForm").submit();
+			    });
+			});
+    	});
     </script>
 </body>
 </html> 
